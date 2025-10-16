@@ -1,0 +1,55 @@
+version: "3.9"
+networks:
+  prototyping: {}
+
+services:
+  server:
+    attach: false
+    build: 
+      context: .
+      dockerfile: docker/Server.Dockerfile
+    container_name: demo-server
+    volumes:
+      - ./data:/app/data:z
+      - ./configs:/app/configs:z
+      - ./results:/app/results:z
+      - ./scripts:/app/scripts:z
+      - ./src:/app/src:z
+    networks: [prototyping]
+    expose: ["8000"]
+    command: ["python3", "/app/src/run_demo_server.py"]
+
+  client:
+    #attach: false
+    build: 
+      context: .
+      dockerfile: docker/Client.Dockerfile
+    container_name: demo-client
+    volumes:
+      - ./data:/app/data:z
+      - ./configs:/app/configs:z
+      - ./results:/app/results:z
+      - ./scripts:/app/scripts:z
+      - ./src:/app/src:z
+    networks: [prototyping]
+    environment:
+      WS_URL: ws://server:8000/ws 
+      ZMQ_PUSH_SOCKET: tcp://visualizer:5556
+    ports:
+      - "5000:5000"
+    #command: ["python3", "/app/src/demo/client.py"]
+
+  visualizer:
+    #attach: false
+    build:
+      context: ./src/demo/visualizer
+      dockerfile: ../../../docker/Visualizer.Dockerfile
+    container_name: visualizer
+    ports:
+      - "5173:5173"
+      - "8765:8765"
+    environment:
+      ZMQ_PULL_SOCKET: tcp://*:5556
+    networks: [prototyping]
+    stdin_open: true
+    tty: true
