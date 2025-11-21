@@ -1,0 +1,3 @@
+[submodule "rabbit-transcoding-core"]
+	path = rabbit-transcoding-core
+	url = https://github.com/ikt-luh/rabbit-transcoding-core.git
