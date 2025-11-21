@@ -12,6 +12,7 @@ from typing import Optional, Dict, Any
 
 from player import Player
 from decoder import DecoderPool
+base_config = {}
 from gui.backend import create_flask_app
 
 
@@ -146,19 +147,12 @@ class DemoClient:
 
 
 if __name__ == "__main__":
-    url = os.getenv("WS_URL", "ws://server:8000/ws")
+    url = os.getenv("WS_URL", "ws://server:8088/ws")
 
-    config_path = "/app/configs/demo_config.yaml"
-    with open(config_path, "r") as f:
-        base_config = yaml.safe_load(f)
-
-    # Load rate config
-    rate_config_path = base_config.get("rate-config", "rate/R1.yaml")
-    with open(rate_config_path, "r") as f:
-        rate_config = yaml.safe_load(f)
-
-    base_config.update(rate_config)
+    base_config = {}
     base_config["sequence"] = "loot"
+    base_config["geoQP"] = 20
+    base_config["attQP"] = 24
     client = DemoClient( url, base_config)
 
     app, socketio = create_flask_app(client)
@@ -166,7 +160,7 @@ if __name__ == "__main__":
         target=lambda: socketio.run(
             app, 
             host="0.0.0.0", 
-            port=5000,
+            port=5001,
             allow_unsafe_werkzeug=True,
             use_reloader=False,
         ),

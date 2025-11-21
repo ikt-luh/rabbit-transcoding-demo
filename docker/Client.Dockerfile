@@ -36,9 +36,9 @@ RUN pip install maturin[patchelf]
 
 # Fast tmc2 decoder
 WORKDIR /app/dependencies/
-COPY ./dependencies /app/dependencies
+RUN git clone https://github.com/mic-rud/tmc2-rs.git
 WORKDIR /app/dependencies/tmc2-rs
 RUN maturin build --release -o dist && python -m pip install dist/*.whl
 
 WORKDIR /app
-CMD ["python", "src/demo/client.py"]
+#CMD ["python", "src/client.py"]

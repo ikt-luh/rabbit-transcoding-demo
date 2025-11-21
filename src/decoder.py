@@ -40,9 +40,9 @@ def _worker_loop(in_q, result_queue):
 
 class DecoderPool:
     def __init__(self, num_workers, metrics):
-        self.in_queue = multiprocessing.queue(32)
-        self.result_queue = multiprocessing.queue(32)
-        self.out_queue = multiprocessing.queue(300)
+        self.in_queue = multiprocessing.Queue(32)
+        self.result_queue = multiprocessing.Queue(32)
+        self.out_queue = multiprocessing.Queue(300)
 
         self.num_workers = num_workers
         self.procs = []

@@ -19,7 +19,7 @@ services:
       WS_URL: ws://192.168.1.10:8000/ws
       ZMQ_PUSH_SOCKET: tcp://visualizer:5556
     ports:
-      - "5000:5000"
+      - "5001:5001"
     networks:
       - zmq_net
     restart: unless-stopped

@@ -9,14 +9,19 @@ services:
       context: .
       dockerfile: docker/Server.Dockerfile
     container_name: demo-server
+    runtime: nvidia
+    environment:
+      - MEDIA_DIR=${MEDIA_DIR}
+      - SERVER_CONFIG_PATH=${SERVER_CONFIG_PATH}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
     volumes:
       - ./data:/app/data:z
-      - ./configs:/app/configs:z
       - ./results:/app/results:z
       - ./scripts:/app/scripts:z
       - ./src:/app/src:z
     networks: [prototyping]
-    expose: ["8000"]
+    expose: ["8088"]
     command: ["python3", "/app/src/run_demo_server.py"]
 
   client:
@@ -27,23 +32,22 @@ services:
     container_name: demo-client
     volumes:
       - ./data:/app/data:z
-      - ./configs:/app/configs:z
       - ./results:/app/results:z
       - ./scripts:/app/scripts:z
       - ./src:/app/src:z
     networks: [prototyping]
     environment:
-      WS_URL: ws://server:8000/ws 
+      WS_URL: ws://server:8088/ws 
       ZMQ_PUSH_SOCKET: tcp://visualizer:5556
     ports:
-      - "5000:5000"
-    #command: ["python3", "/app/src/demo/client.py"]
+      - "5001:5001"
+    command: ["python3", "/app/src/client.py"]
 
   visualizer:
     #attach: false
     build:
-      context: ./src/demo/visualizer
-      dockerfile: ../../../docker/Visualizer.Dockerfile
+      context: ./src/visualizer #Needs to have vis as context
+      dockerfile: ../../docker/Visualizer.Dockerfile
     container_name: visualizer
     ports:
       - "5173:5173"
